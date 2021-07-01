@@ -1,0 +1,91 @@
+﻿@page "/"
+@using System.Net.Http
+@inject HttpClient Http
+@using System.Net.Http.Json
+
+<h1>Create, Read, Update & Delete data from API</h1>
+
+<MudDivider Class="my-6"></MudDivider>
+
+<div Class="d-flex mb-16">
+    <div Class="flex-grow-1 flex-shrink-0 order-1 mr-6"><MudTextField @bind-Value="TextValue" Margin="Margin.Dense" Label="Content" Variant="Variant.Filled"></MudTextField></div>
+    <div Class="flex-grow-0 flex-shrink-1 order-2"><MudButton Variant="Variant.Filled" Size="Size.Large" Class="mt-2" Color="Color.Primary">Add Item</MudButton></div>
+</div>
+
+@if (weatherForecast == null)
+{
+    <p>No Items found.</p>
+}
+else
+{
+    <MudGrid>
+        @foreach (var item in weatherForecast)
+        {
+            <MudItem lg="3">
+                <MudCard>
+                    <MudCardContent>
+                        <MudText>@item.Date</MudText>
+                        <MudText Typo="Typo.body2">@item.Summary</MudText>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary">Delete</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+@code {
+    public string TextValue { get; set; }
+
+    public class WeatherForecast
+    {
+        public DateTime Date { get; set; }
+
+        public int TemperatureC { get; set; }
+
+        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+
+        public string Summary { get; set; }
+    }
+
+    private WeatherForecast[] weatherForecast;
+
+    protected override async Task OnInitializedAsync()
+    {
+        weatherForecast = await Http.GetFromJsonAsync<WeatherForecast[]>("/api/WeatherForecast/getAll");
+    }
+
+    //private async Task GetTodoItems() =>
+    //    todoItems = await Http.GetFromJsonAsync<TodoItem[]>(ServiceEndpoint);
+
+    //private void EditItem(long id)
+    //{
+    //    editItem = todoItems.Single(i => i.Id == id);
+    //    editRowStyle = "table-row";
+    //}
+
+    //private async Task AddItem()
+    //{
+    //    var addItem = new TodoItem { Name = newItemName, IsComplete = false };
+    //    await Http.PostAsJsonAsync(ServiceEndpoint, addItem);
+    //    newItemName = string.Empty;
+    //    await GetTodoItems();
+    //    editRowStyle = "none";
+    //}
+
+    //private async Task SaveItem()
+    //{
+    //    await Http.PutAsJsonAsync($"{ServiceEndpoint}/{editItem.Id}", editItem);
+    //    await GetTodoItems();
+    //    editRowStyle = "none";
+    //}
+
+    //private async Task DeleteItem(long id)
+    //{
+    //    await Http.DeleteAsync($"{ServiceEndpoint}/{id}");
+    //    await GetTodoItems();
+    //    editRowStyle = "none";
+    //}
+}
